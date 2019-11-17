@@ -1,30 +1,57 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
+import axios from 'axios';
+
+const options = [{value: 'AB', label: 'AB'},{value: 'AK', label: 'AK'},
+ {value: 'AL', label: 'AL'},{value: 'AR', label: 'AR'},
+ {value: 'AZ', label: 'AZ'},{value: 'BAS', label: 'BAS'},
+ {value: 'BC', label: 'BC'},{value: 'CA', label: 'CA'},
+ {value: 'CON', label: 'CON'},{value: 'CT', label: 'CT'},
+ {value: 'DOW', label: 'DOW'},{value: 'DUR', label: 'DUR'},
+ {value: 'FL', label: 'FL'},{value: 'GA', label: 'GA'},
+ {value: 'IL', label: 'IL'},{value: 'NC', label: 'NC'},
+ {value: 'NE', label: 'NE'},{value: 'NJ', label: 'NJ'},
+ {value: 'NM', label: 'NM'},{value: 'NV', label: 'NV'},
+ {value: 'NY', label: 'NY'},{value: 'OH', label: 'OH'},
+ {value: 'ON', label: 'ON'},{value: 'PA', label: 'PA'},
+ {value: 'QC', label: 'QC'},{value: 'SC', label: 'SC'},
+ {value: 'TN', label: 'TN'},{value: 'TX', label: 'TX'},
+ {value: 'UT', label: 'UT'},{value: 'VA', label: 'VA'},
+ {value: 'VT', label: 'VT'},{value: 'WA', label: 'WA'},
+ {value: 'WI', label: 'WI'},{value: 'XGL', label: 'XGL'},
+ {value: 'XGM', label: 'XGM'},{value: 'XWY', label: 'XWY'}];
 
 export default class CreateTodo extends Component {
 
     constructor(props) {
         super(props);
 
-        this.onChangeTodoDescription = this.onChangeTodoDescription.bind(this);
         this.onChangeCity = this.onChangeCity.bind(this);
         this.onChangeState = this.onChangeState.bind(this);
         this.onChangeTodoPriority = this.onChangeTodoPriority.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
 
         this.state = {
-            todo_description: '',
             city: '',
             state: 'GA',
-            todo_priority: '',
-            todo_completed: false
+            file: null,
+            imagePreviewUrl: '',
         }
     }
 
-    onChangeTodoDescription(e) {
-        this.setState({
-            todo_description: e.target.value
-        });
-    }
+  _handleImageChange(e) {
+  e.preventDefault();
+
+  let reader = new FileReader();
+  let file = e.target.files[0];
+  reader.onloadend = () => {
+    this.setState({
+      file: file,
+      imagePreviewUrl: reader.result
+    });
+  }
+  reader.readAsDataURL(file)
+}
 
     onChangeCity(e) {
         this.setState({
@@ -48,51 +75,40 @@ export default class CreateTodo extends Component {
         e.preventDefault();
 
         console.log(`Form submitted:`);
-        console.log(`Todo Description: ${this.state.todo_description}`);
         console.log(`City: ${this.state.city}`);
         console.log(`State: ${this.state.state}`);
         console.log(`Todo Priority: ${this.state.todo_priority}`);
 
+        const data = new FormData()
+        data.append('file', this.state.file)
+        axios.post("http://localhost:8000/upload", data, {
+          // receive two    parameter endpoint url ,form data
+        })
+        .then(res => { // then print response status
+          console.log(res.statusText)
+        })
+
         this.setState({
-            todo_description: '',
             city: '',
-            state: 'GA',
-            todo_priority: '',
-            todo_completed: false
+            state: '',
+            file: null,
+            imagePreviewUrl: '',
         })
     }
 
     render() {
+      let {imagePreviewUrl} = this.state;
+      let $imagePreview = null;
+      if (imagePreviewUrl) {
+        $imagePreview = (<img src={imagePreviewUrl} />);
+      } else {
+        $imagePreview = (<div className="previewText">No file chosen</div>);
+      }
         return (
             <div style={{marginTop: 10}}>
                 <h3>Upload your Image</h3>
                 <form onSubmit={this.onSubmit}>
-                    <div className="form-group">
-                        <label>Description: </label>
-                        <input  type="text"
-                                className="form-control"
-                                value={this.state.todo_description}
-                                onChange={this.onChangeTodoDescription}
-                                />
-                    </div>
-                    <div className="form-group">
-                        <label>City: </label>
-                        <input
-                                type="text"
-                                className="form-control"
-                                value={this.state.city}
-                                onChange={this.onChangeCity}
-                                />
-                    </div>
-                    <div className="form-group">
-                        <label>State: </label>
-                        <select value={this.state.value} onChange={this.onChangeState}>
-                        <option value="GA">GA</option>
-                        <option value="CA">CA</option>
-                        <option value="NV">NV</option>
-                        <option value="NY">NY</option>
-                        </select>
-                    </div>
+                    <label>Label: </label>
                     <div className="form-group">
                         <div className="form-check form-check-inline">
                             <input  className="form-check-input"
@@ -141,7 +157,25 @@ export default class CreateTodo extends Component {
                     </div>
 
                     <div className="form-group">
-                        <input type="submit" value="Upload" className="btn btn-primary" />
+                      <label>State: </label>
+                      <Select options = {options} />
+                    </div>
+
+                    <div className="form-group">
+                      <label>City: </label>
+                      <Select options = {options} />
+                    </div>
+
+                    <div className="previewComponent">
+                      <label>Image: </label>
+                      <input className="fileInput"
+                            type="file"
+                            onChange={(e)=>this._handleImageChange(e)} />
+                      <div className="imgPreview">{$imagePreview}</div>
+                      </div>
+                    <div className="form-group">
+                        <input type="submit" value="Upload"
+                              className="btn btn-primary"/>
                     </div>
                 </form>
             </div>
