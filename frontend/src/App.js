@@ -3,11 +3,16 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
+import SearchResult from "./components/search-image.component";
 import UploadImage from "./components/upload-image.component";
 
 import logo from "./logo.svg";
 
 class App extends Component {
+  componentDidMount() {
+    document.title = "YelpImageSearch"
+  }
+  
   render() {
     return (
       <Router>
@@ -27,6 +32,7 @@ class App extends Component {
           </nav>
           <br/>
           <Route path="/upload" component={UploadImage} />
+          <Route path="/results" component={SearchResult}/>
         </div>
       </Router>
     );
