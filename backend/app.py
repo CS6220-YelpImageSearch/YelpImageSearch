@@ -22,7 +22,7 @@ class ImageQuery(Resource):
 
         ret = self.model.query_image(image)
         # encode
-        ret = [r.decode('UTF-8') for r in ret]
+        ret = [r.decode('UTF-8').split('.')[0] for r in ret]
         return ret, 200
 
 
