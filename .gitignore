@@ -2,3 +2,8 @@ data
 output
 **/.DS_Store
 **/node_modules
+**/__pycache__
+*.hdf5
+LasVegasFoodFeatures
+venv
+package-lock.json
