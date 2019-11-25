@@ -3,27 +3,27 @@ from flask_restful import Resource, Api, request
 import base64
 from PIL import Image
 from io import BytesIO
+from CNNModel import CNNModel
+import re
 
 app = Flask(__name__)
 api = Api(app)
 
 
 class ImageQuery(Resource):
-    model = new Model()
+    def __init__(self):
+        self.model = CNNModel()
     
-    def get(self):
-        return 'hello world'
-        # data = request.json
-        # img_data = base64.b64decode(data['image'])
-        # image = Image.open(BytesIO(img_data))
-        # image.show()
+    def post(self):
+        data = request.form
+        data = re.sub('^data:image/.+;base64,', '', data['image'])
+        img_data = base64.b64decode(data)
+        image = Image.open(BytesIO(img_data))
 
-        # return "hello word"
-        # # buffered = BytesIO()
-        # # output_image.save(buffered, format="PNG")
-        # # output_image_data = base64.b64encode(buffered.getvalue())
-
-        # # return {'image': output_image_data.decode('ascii')}, 201
+        ret = self.model.query_image(image)
+        # encode
+        ret = [r.decode('UTF-8') for r in ret]
+        return ret, 200
 
 
 api.add_resource(ImageQuery, '/')
