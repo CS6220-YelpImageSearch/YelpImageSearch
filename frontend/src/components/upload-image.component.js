@@ -104,7 +104,7 @@ export default class UploadImage extends Component {
       console.log(res.data["query_result"]);
       this.props.history.push({
 			  pathname: '/results',
-			  state: { query_result: res.data["query_result"] }
+			  state: { query_result: res.data["query_result"], input_file:res.data["input_file"] }
 			});
     });
 

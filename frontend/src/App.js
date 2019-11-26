@@ -6,13 +6,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import SearchResult from "./components/search-image.component";
 import UploadImage from "./components/upload-image.component";
 
-import logo from "./logo.svg";
+import logo from "./logo.jpeg";
 
 class App extends Component {
   componentDidMount() {
     document.title = "YelpImageSearch"
   }
-  
+
   render() {
     return (
       <Router>

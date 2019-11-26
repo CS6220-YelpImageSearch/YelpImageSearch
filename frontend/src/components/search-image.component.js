@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
-import ReactLoading from 'react-loading';
 
+const imagePath = process.env.PUBLIC_URL;
+
+// set time out
 function getCoffee() {
   return new Promise(resolve => {
-    setTimeout(() => resolve('☕'), 500); // it takes 2 seconds to make coffee
+    setTimeout(() => resolve('☕'), 500);
   });
 }
 
@@ -16,8 +18,9 @@ export default class Results extends Component {
     this.state = {
       photo_business: props.location.state["query_result"][1],
       businesses: props.location.state["query_result"][0],
+      input_image:props.location.state["input_file"],
       isLoad: true,
-    }
+    };
   }
 
   componentDidMount() {
@@ -26,9 +29,8 @@ export default class Results extends Component {
 
   // Fetches our GET route from the Express server.
   render() {
-    const imagePath = process.env.PUBLIC_URL;
     if (!this.state.isLoad) {
-      return <div> </div>
+      return <div>Page is loading </div>
     } else {
       return (
         <div className="Result">
@@ -42,7 +44,7 @@ export default class Results extends Component {
                      <div className="card">
                          <div className="card-horizontal">
                              <div className="img-square-wrapper">
-                                 <img src={`${imagePath}\/input_image\/input_file.png`} alt="input" height='300' weight='500'/>
+                                 <img id="img" src={`data:image/jpg;base64,${this.state.input_image}`} alt="input" height='300' weight='500'/>
                              </div>
                              <div className="card-body">
                                  <h4 className="card-title">Input Image</h4>

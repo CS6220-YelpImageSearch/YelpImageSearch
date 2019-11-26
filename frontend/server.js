@@ -17,14 +17,11 @@ app.listen(PORT, function() {
 
 // function to encode file data to base64 encoded string
 function base64_encode(file) {
-    // read binary data
-    // var bitmap = fs.readFileSync(file, "base64");
-    console.log(bitmap)
-    return bitmap
+    console.log(bitmap);
+    return bitmap;
 }
 
-// hard coded user input
-// photo_id_array = ["3C1pjroWIgXlrlWQtJneUw", "_t87-w-efuN0p5gQ8hJzgg", "FYY0zzJOz0rWxRAoLeZshg"];
+// city and state inputs
 cityInput = "Las Vegas";
 stateInput = "NV";
 
@@ -41,6 +38,7 @@ var Photo = require('./schema/photo.model');
 var Business = require('./schema/business.model');
 var Photo_Plus_Business = require('./schema/photo_plus_business.model');
 
+// filter
 var filterByLabelAndLocation = (photo_ids, inputCity, inputState) => {
   return new Promise((resolve, reject) => {
     Photo_Plus_Business.find({photo_id: photo_ids}).exec()
@@ -88,8 +86,9 @@ app.post('/upload', function(req, res) {
     } else if (err) {
       return res.status(500).json(err);
     }
+    // convert the image to base64 format
     var base64image = new Buffer(fs.readFileSync(req.file.path)).toString("base64");
-    
+
     var image = req.file;
     var label = req.body.label;
     var state = req.body.state;
@@ -124,10 +123,12 @@ app.post('/upload', function(req, res) {
 
         filterByLabelAndLocation(new_photo_id_array, city, state)
         .then((result) => { // businesses is an array of business object
-          console.log("=====>Below are business information:")
-          console.log(result)
+          console.log("=====>Below are business information:");
+          console.log(result);
+          console.log("=====>Below is the input image:");
+          console.log(image);
           /* Do all the rendering here */
-          return res.status(200).send({"query_result": result});
+          return res.status(200).send({"query_result": result, "input_file": base64image});
         })
       });
     });
