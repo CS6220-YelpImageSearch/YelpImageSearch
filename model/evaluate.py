@@ -4,9 +4,9 @@ import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-# import tensorflow.keras.backend as K
-# from tensorflow.keras.models import load_model
-# from tensorflow.keras.preprocessing import image as kimage
+import tensorflow.keras.backend as K
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image as kimage
 
 import src as sc
 import h5py
@@ -44,21 +44,22 @@ def predict_sift(test_path, vocab, train_feats, paths, max_num=3):
     
     return (paths[predicted_indexes[0, :max_num]], test_feats, distances)
 
-def sift_query(img_path):
+def sift_query(img_path, display=False):
     vocab, train_feats, paths = load_sift()
-    predicted_paths, test_feats = predict_sift(img_path, vocab, train_feats, paths)
-    for i, img in enumerate(predicted_paths):
-        img = img.decode("utf-8").split('/')[-1]
-        image = mpimg.imread('./data/LV_photos' + '/' + img)
-        plt.title('search output %d' %(i+1))
-        plt.imshow(image)
-        plt.show()
+    predicted_paths, test_feats, distances = predict_sift(img_path, vocab, train_feats, paths)
+    if display:
+        for i, img in enumerate(predicted_paths):
+            img = img.decode("utf-8").split('/')[-1]
+            image = mpimg.imread('./data/LV_photos' + '/' + img)
+            plt.title('search output %d' %(i+1))
+            plt.imshow(image)
+            plt.show()
 
-    return (test_feats, paths)
+    return (test_feats, paths, distances)
 
 
 
-def cnn_query(img_path):
+def cnn_query(img_path, display=False):
     h5f = h5py.File('./output/feature/LasVegasFoodFeatures', 'r')
     features = h5f['dataset_1'][:]
     img_names = h5f['dataset_2'][:]
@@ -78,15 +79,16 @@ def cnn_query(img_path):
     max_res = 3
     img_list = [img_names[index] for i, index in enumerate(rank_ID[0:max_res])]
 
-    for i, img in enumerate(img_list):
-        image = mpimg.imread('./data/LV_photos' + '/' + str(img, 'utf-8'))
-        plt.title('search output %d' %(i+1))
-        plt.imshow(image)
-        plt.show()
+    if display:
+        for i, img in enumerate(img_list):
+            image = mpimg.imread('./data/LV_photos' + '/' + str(img, 'utf-8'))
+            plt.title('search output %d' %(i+1))
+            plt.imshow(image)
+            plt.show()
 
     return (scores, img_names)
 
-def rank_rerank(img_path, k):
+def rank_rerank(img_path, k, display=False):
     distances_cnn, image_names_cnn = cnn_query(img_path)
     image_names_cnn = [str(i, 'utf-8') for i in image_names_cnn]
     image_names_cnn = image_names_cnn[:k]
@@ -99,17 +101,18 @@ def rank_rerank(img_path, k):
             ret_names.append(i)
     ret_name = ret_names[:3]
 
-    for i, img in enumerate(img_list):
-        image = mpimg.imread('./data/LV_photos' + '/' + str(img, 'utf-8'))
-        plt.title('search output %d' %(i+1))
-        plt.imshow(image)
-        plt.show()
+    if display:
+        for i, img in enumerate(img_list):
+            image = mpimg.imread('./data/LV_photos' + '/' + str(img, 'utf-8'))
+            plt.title('search output %d' %(i+1))
+            plt.imshow(image)
+            plt.show()
 
 
     return 0
 
 
-def average_score(img_path, w):
+def average_score(img_path, w, display=False):
     _, image_names_sift, distances_sift = sift_query(img_path)
     image_names_sift = [name.decode("utf-8").split('/')[-1] for name in image_names_sift]
     distances_cnn, image_names_cnn = cnn_query(img_path)
@@ -117,17 +120,19 @@ def average_score(img_path, w):
     distances_sift /= np.max(distances_sift)
     distances_cnn /= np.max(distances_cnn)
 
-    dict_distance = dict(zip(image_names_sift, distances_sift))
+    dict_distance = dict(zip(image_names_sift, distances_sift[0]))
     for name, distance in zip(image_names_cnn, distances_cnn):
-        dict_distance[name] += distance
+        dict_distance[name] *= (1 - w)
+        dict_distance[name] += (distance * 0.8)
 
     dict_distance = [(key, value) for key, value in dict_distance.items()]
     dict_distance.sort(key = lambda x: x[1])
-    for name, _ in dict_distance[:3]:
-        image = mpimg.imread('./data/LV_photos' + '/' + img)
-        plt.title('search output %d' %(i+1))
-        plt.imshow(image)
-        plt.show()
+    if display:
+        for name, _ in dict_distance[:3]:
+            image = mpimg.imread('./data/LV_photos' + '/' + img)
+            plt.title('search output %d' %(i+1))
+            plt.imshow(image)
+            plt.show()
     return 0
 
 if __name__ == '__main__':
@@ -138,8 +143,8 @@ if __name__ == '__main__':
     elif method == 'cnn':
         cnn_query(img_path)
     elif method == 'rerank':
-        rank_rerank(img_path)
+        rank_rerank(img_path, 50)
     elif method == 'average':
-        average_score(img_path)
+        average_score(img_path, 0.8)
     else:
         print('We only provide 4 methods: sift, cnn, rerank and average!')

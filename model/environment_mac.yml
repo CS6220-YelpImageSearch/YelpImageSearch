@@ -1,0 +1,28 @@
+name: YelpImageSearch
+channels:
+- pytorch
+- menpo
+- defaults
+dependencies:
+- jupyter
+- matplotlib
+- python=3.5
+- scikit-learn
+- scipy
+- opencv3
+- cyvlfeat
+- pytorch
+- torchvision
+- pip
+- pillow
+- django
+- pandas
+- h5py
+- pip:
+  - visdom
+  - django-redis
+  - nltk
+  - stanfordcorenlp
+  - tensorflow
+  - keras
+- pyyaml
