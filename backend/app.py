@@ -11,10 +11,13 @@ api = Api(app)
 model = None
 
 class ImageQuery(Resource):
-    
+
     def post(self):
-        data = request.form
-        data = re.sub('^data:image/.+;base64,', '', data['image'])
+        # data = request.form
+        data = request.get_json()
+        data = data['image']
+        print(data)
+        # data = re.sub('^data:image/.+;base64,', '', data['image'])
         img_data = base64.b64decode(data)
         image = Image.open(BytesIO(img_data))
 
@@ -29,4 +32,4 @@ api.add_resource(ImageQuery, '/')
 
 if __name__ == '__main__':
     model = CNNModel()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="localhost", port=5000, debug=True)
