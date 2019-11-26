@@ -2,7 +2,7 @@ In the project directory, you can run:
 
 ### `nodemon server.js`
 
-To start server, it run on [http://localhost:8000](http://localhost:8000)
+To start server, it runs on [http://localhost:8000](http://localhost:8000)
 
 ### `npm start` or `nodemon`
 
