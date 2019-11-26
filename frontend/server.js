@@ -111,14 +111,11 @@ app.post('/upload', function(req, res) {
       response.on('end', () => {
         data = JSON.parse(data);
         var new_photo_id_array = data;
-        console.log('No more data in response.');
 
         filterByLabelAndLocation(new_photo_id_array, label, city, state)
         .then((result) => { // businesses is an array of business object
           console.log("=====>Below are business information:");
           console.log(result);
-          console.log("=====>Below is the input image:");
-          console.log(image);
           return res.status(200).send({"query_result": result, "input_file": base64image});
         })
       });
