@@ -7,3 +7,4 @@ output
 LasVegasFoodFeatures
 venv
 package-lock.json
+*.h5
