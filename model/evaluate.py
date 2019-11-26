@@ -12,6 +12,7 @@ import src as sc
 import h5py
 import os.path as osp
 
+
 def load_sift():
     name_dataset = 'yelp'
     vocab_filename = '4000vocab.h5'
@@ -38,11 +39,13 @@ def load_sift():
 
     return (vocab, train_feats, paths)
 
+
 def predict_sift(test_path, vocab, train_feats, paths, max_num=3):
     test_feats = sc.get_bags_of_sifts([test_path], vocab)
     (predicted_indexes, distances) = sc.nearest_neighbor_classify(train_feats, test_feats)
     
     return (paths[predicted_indexes[0, :max_num]], test_feats, distances)
+
 
 def sift_query(img_path, display=False):
     vocab, train_feats, paths = load_sift()
@@ -56,7 +59,6 @@ def sift_query(img_path, display=False):
             plt.show()
 
     return (test_feats, paths, distances)
-
 
 
 def cnn_query(img_path, display=False):
@@ -87,6 +89,7 @@ def cnn_query(img_path, display=False):
             plt.show()
 
     return (scores, img_names)
+
 
 def rank_rerank(img_path, k, display=False):
     distances_cnn, image_names_cnn = cnn_query(img_path)
@@ -134,6 +137,7 @@ def average_score(img_path, w, display=False):
             plt.imshow(image)
             plt.show()
     return 0
+
 
 if __name__ == '__main__':
     method = sys.argv[1]
