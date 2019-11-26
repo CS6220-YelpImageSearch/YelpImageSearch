@@ -15,16 +15,6 @@ app.listen(PORT, function() {
     console.log('App running on port: ' + PORT);
 });
 
-// function to encode file data to base64 encoded string
-function base64_encode(file) {
-    console.log(bitmap);
-    return bitmap;
-}
-
-// city and state inputs
-cityInput = "Las Vegas";
-stateInput = "NV";
-
 // connect to mongodb
 mongoose.connect('mongodb://127.0.0.1:27017/yelp', { useNewUrlParser: true });
 
@@ -38,15 +28,15 @@ var Photo = require('./schema/photo.model');
 var Business = require('./schema/business.model');
 var Photo_Plus_Business = require('./schema/photo_plus_business.model');
 
-// filter
-var filterByLabelAndLocation = (photo_ids, inputCity, inputState) => {
+// filter found photos using input label, city, and state
+var filterByLabelAndLocation = (photo_ids, inputLabel, inputCity, inputState) => {
   return new Promise((resolve, reject) => {
     Photo_Plus_Business.find({photo_id: photo_ids}).exec()
     .then(function(photos) {
       filtered_photo_business = []
       filtered_business_id = []
       for (i = 0; i < photos.length; i++) {
-        if (((photos[i].label == "food") || (photos[i].label == "drink")) && (photos[i].city == inputCity) && (photos[i].state == inputState)) {
+        if ((photos[i].label == inputLabel) && (photos[i].city == inputCity) && (photos[i].state == inputState)) {
           this_business = photos[i].business_id
           filtered_photo_business.push({"photo_name": photos[i].photo_id+".jpg", "business_id": this_business})
           filtered_business_id.push(this_business)
@@ -86,11 +76,12 @@ app.post('/upload', function(req, res) {
     } else if (err) {
       return res.status(500).json(err);
     }
+
     // convert the image to base64 format
     var base64image = new Buffer(fs.readFileSync(req.file.path)).toString("base64");
 
     var image = req.file;
-    var label = req.body.label;
+    var label = req.body.label.toLowerCase();
     var state = req.body.state;
     var city = req.body.city;
 
@@ -110,6 +101,7 @@ app.post('/upload', function(req, res) {
         }
     };
 
+    // send request to the backend to get the query result from the model for the input image
     var request = http.request(options, (response) => {
       var data = '';
       response.on('data', (chunk) => {
@@ -121,13 +113,12 @@ app.post('/upload', function(req, res) {
         var new_photo_id_array = data;
         console.log('No more data in response.');
 
-        filterByLabelAndLocation(new_photo_id_array, city, state)
+        filterByLabelAndLocation(new_photo_id_array, label, city, state)
         .then((result) => { // businesses is an array of business object
           console.log("=====>Below are business information:");
           console.log(result);
           console.log("=====>Below is the input image:");
           console.log(image);
-          /* Do all the rendering here */
           return res.status(200).send({"query_result": result, "input_file": base64image});
         })
       });
