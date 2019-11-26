@@ -7,55 +7,54 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 export default class UploadImage extends Component {
 
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.onChangeCity = this.onChangeCity.bind(this);
-        this.onChangeState = this.onChangeState.bind(this);
-        this.onChangeLabel = this.onChangeLabel.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
+    this.onChangeCity = this.onChangeCity.bind(this);
+    this.onChangeState = this.onChangeState.bind(this);
+    this.onChangeLabel = this.onChangeLabel.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
 
-        this.state = {
-            label:'',
-            city: '',
-            state: '',
-            file: null,
-            imagePreviewUrl: '',
-            imagePreview: null,
-        }
+    this.state = {
+      label:'',
+      city: '',
+      state: '',
+      file: null,
+      imagePreviewUrl: '',
+      imagePreview: null,
     }
+  }
 
-    componentDidMount() {
-      //Get html elements
-      var stateSel = document.getElementById("stateSel");
-      var citySel = document.getElementById("citySel");
+  componentDidMount() {
+    //Get html elements
+    var stateSel = document.getElementById("stateSel");
+    var citySel = document.getElementById("citySel");
 
-      //Load states
-      for (var state in stateCityInfo) {
-        stateSel.options[stateSel.options.length] = new Option(state, state);
-      }
+    //Load states
+    for (var state in stateCityInfo) {
+      stateSel.options[stateSel.options.length] = new Option(state, state);
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
-  console.log(
-    `this.state.clickCounts(♻️ componentDidUpdate)`,
-    this.state.state, this.state.city
-)
-}
+	  console.log(
+	    `this.state.clickCounts(♻️ componentDidUpdate)`,
+	    this.state.state, this.state.city
+		)
+	}
 
   onChangeImage(e) {
-  e.preventDefault();
-  var reader = new FileReader();
-  var file = e.target.files[0];
-  console.log(file);
-  reader.onloadend = () => {
-    this.setState({
-      file: file,
-      imagePreviewUrl: reader.result
-    });
-  }
-  reader.readAsDataURL(file)
-}
+	  e.preventDefault();
+	  var reader = new FileReader();
+	  var file = e.target.files[0];
+	  reader.onloadend = () => {
+	    this.setState({
+	      file: file,
+	      imagePreviewUrl: reader.result
+	    });
+	  }
+	  reader.readAsDataURL(file)
+	}
 
   onChangeLabel(e) {
     this.setState({
@@ -102,7 +101,11 @@ export default class UploadImage extends Component {
     axios.post("http://localhost:8000/upload", data, {
     })
     .then(res => {
-      console.log(res.statusText);
+      console.log(res.data["query_result"]);
+      this.props.history.push({
+			  pathname: '/results',
+			  state: { query_result: res.data["query_result"] }
+			});
     });
 
     this.setState({
@@ -113,100 +116,98 @@ export default class UploadImage extends Component {
       imagePreviewUrl: '',
       imagePreview: null,
     });
-
-    this.props.history.push('/results');
   }
 
-    render() {
-      const { selectedStateOption } = this.state.state;
-      const { selectedCityOption } = this.state.city;
-      let {imagePreviewUrl} = this.state;
-      let $imagePreview = null;
-      if (imagePreviewUrl) {
-        $imagePreview = (<img src={imagePreviewUrl} />);
-      } else {
-        $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
-      }
-
-        return (
-            <div style={{marginTop: 10}}>
-                <h3>Upload your Image</h3>
-                <form onSubmit={this.onSubmit}>
-                    <label>Label: </label>
-                    <div className="form-group">
-                        <div className="form-check form-check-inline">
-                            <input  className="form-check-input"
-                                    type="radio"
-                                    name="labelOptions"
-                                    id="labelFood"
-                                    value="Food"
-                                    onChange={this.onChangeLabel}
-                                    />
-                            <label className="form-check-label">Food</label>
-                        </div>
-
-                        <div className="form-check form-check-inline">
-                            <input  className="form-check-input"
-                                    type="radio"
-                                    name="labelOptions"
-                                    id="labelDrink"
-                                    value="Drink"
-                                    onChange={this.onChangeLabel}
-                                    />
-                            <label className="form-check-label">Drink</label>
-                        </div>
-
-                        <div className="form-check form-check-inline">
-                            <input  className="form-check-input"
-                                    type="radio"
-                                    name="labelInside"
-                                    id="labelInside"
-                                    value="Inside"
-                                    onChange={this.onChangeLabel}
-                                    />
-                            <label className="form-check-label">Inside</label>
-                        </div>
-
-                        <div className="form-check form-check-inline">
-                            <input  className="form-check-input"
-                                    type="radio"
-                                    name="labelOptions"
-                                    id="labelOutside"
-                                    value="Outside"
-                                    onChange={this.onChangeLabel}
-                                    />
-                            <label className="form-check-label">Outside</label>
-                        </div>
-                    </div>
-
-                    <div className="stateComponent">
-                    <label>State: </label>
-                    <select id="stateSel" size="1" onChange={this.onChangeState}>
-                      <option value="">-- Select State--</option>
-                    </select>
-                    </div>
-
-                    <div className="stateComponent">
-                    <label>City: </label>
-                    <select id="citySel" size="1" onChange={this.onChangeCity}>
-                      <option value="">-- Select City--</option>
-                    </select>
-                    </div>
-
-                    <div className="previewComponent">
-                      <label>Image: </label>
-                      <input className="fileInput"
-                            type="file"
-                            onChange={(e)=>this.onChangeImage(e)} />
-                      <div className="imgPreview">{$imagePreview}</div>
-                      </div>
-
-                    <div className="form-group">
-                        <input type="submit" value="Upload"
-                              className="btn btn-primary"/>
-                    </div>
-                </form>
-            </div>
-        )
+  render() {
+    const { selectedStateOption } = this.state.state;
+    const { selectedCityOption } = this.state.city;
+    let {imagePreviewUrl} = this.state;
+    let $imagePreview = null;
+    if (imagePreviewUrl) {
+      $imagePreview = (<img src={imagePreviewUrl} />);
+    } else {
+      $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
     }
+
+    return (
+      <div style={{marginTop: 10}}>
+        <h3>Upload your Image</h3>
+        <form onSubmit={this.onSubmit}>
+          <label>Label: </label>
+          <div className="form-group">
+            <div className="form-check form-check-inline">
+              <input  className="form-check-input"
+                      type="radio"
+                      name="labelOptions"
+                      id="labelFood"
+                      value="Food"
+                      onChange={this.onChangeLabel}
+                      />
+              <label className="form-check-label">Food</label>
+            </div>
+
+            <div className="form-check form-check-inline">
+              <input  className="form-check-input"
+                      type="radio"
+                      name="labelOptions"
+                      id="labelDrink"
+                      value="Drink"
+                      onChange={this.onChangeLabel}
+                      />
+              <label className="form-check-label">Drink</label>
+            </div>
+
+            <div className="form-check form-check-inline">
+              <input  className="form-check-input"
+                      type="radio"
+                      name="labelInside"
+                      id="labelInside"
+                      value="Inside"
+                      onChange={this.onChangeLabel}
+                      />
+              <label className="form-check-label">Inside</label>
+            </div>
+
+            <div className="form-check form-check-inline">
+              <input  className="form-check-input"
+                      type="radio"
+                      name="labelOptions"
+                      id="labelOutside"
+                      value="Outside"
+                      onChange={this.onChangeLabel}
+                      />
+              <label className="form-check-label">Outside</label>
+            </div>
+          </div>
+
+          <div className="stateComponent">
+          <label>State: </label>
+          <select id="stateSel" size="1" onChange={this.onChangeState}>
+            <option value="">-- Select State--</option>
+          </select>
+          </div>
+
+          <div className="stateComponent">
+          <label>City: </label>
+          <select id="citySel" size="1" onChange={this.onChangeCity}>
+            <option value="">-- Select City--</option>
+          </select>
+          </div>
+
+          <div className="previewComponent">
+            <label>Image: </label>
+            <input className="fileInput"
+                  type="file"
+                  onChange={(e)=>this.onChangeImage(e)} />
+            <div className="imgPreview">{$imagePreview}</div>
+          </div>
+
+          <div className="form-group">
+            <input type="submit" value="Upload"
+                  className="btn btn-primary"/>
+          </div>
+        </form>
+      </div>
+    )
+  }
 }

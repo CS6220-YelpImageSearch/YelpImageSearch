@@ -24,7 +24,7 @@ function base64_encode(file) {
 }
 
 // hard coded user input
-photo_id_array = ["3C1pjroWIgXlrlWQtJneUw", "_t87-w-efuN0p5gQ8hJzgg", "FYY0zzJOz0rWxRAoLeZshg"];
+// photo_id_array = ["3C1pjroWIgXlrlWQtJneUw", "_t87-w-efuN0p5gQ8hJzgg", "FYY0zzJOz0rWxRAoLeZshg"];
 cityInput = "Las Vegas";
 stateInput = "NV";
 
@@ -49,9 +49,9 @@ var filterByLabelAndLocation = (photo_ids, inputCity, inputState) => {
       filtered_business_id = []
       for (i = 0; i < photos.length; i++) {
         if (((photos[i].label == "food") || (photos[i].label == "drink")) && (photos[i].city == inputCity) && (photos[i].state == inputState)) {
-            this_business = photos[i].business_id
-            filtered_photo_business.push({"photo_name": photos[i].photo_id+".jpg", "business_id": this_business})
-            filtered_business_id.push(this_business)
+          this_business = photos[i].business_id
+          filtered_photo_business.push({"photo_name": photos[i].photo_id+".jpg", "business_id": this_business})
+          filtered_business_id.push(this_business)
         }
       }
       return [filtered_photo_business, filtered_business_id]
@@ -64,7 +64,7 @@ var filterByLabelAndLocation = (photo_ids, inputCity, inputState) => {
         })
     })
     .catch((err)=>{
-        reject(err);
+      reject(err);
     });
   })
 }
@@ -88,22 +88,13 @@ app.post('/upload', function(req, res) {
     } else if (err) {
       return res.status(500).json(err);
     }
-    console.log(req.file.path);
     var base64image = new Buffer(fs.readFileSync(req.file.path)).toString("base64");
-    console.log(base64image);
     
     var image = req.file;
     var label = req.body.label;
     var state = req.body.state;
     var city = req.body.city;
 
-    console.log("=>> MY UPLOAD IMAGE DATA");
-    console.log("label: " + label);
-    console.log("state: " + state);
-    console.log("city: " + city);
-
-    fs.unlink(req.file.path, function(){console.log('Deleted avatar')});
-    
     // post image to the model to retrieve the photo_ids to show
     var postData = JSON.stringify({
       "image": base64image
@@ -120,29 +111,23 @@ app.post('/upload', function(req, res) {
         }
     };
 
-    var request = http.request(options, (res) => {
+    var request = http.request(options, (response) => {
       var data = '';
-      res.on('data', (chunk) => {
-        console.log("in req on receiving data");
+      response.on('data', (chunk) => {
         data += chunk.toString(); // buffer to string
       });
 
-      res.on('end', () => {
+      response.on('end', () => {
         data = JSON.parse(data);
-        console.log("in req on end data")
         var new_photo_id_array = data;
-        console.log(new_photo_id_array);
         console.log('No more data in response.');
 
-        filterByLabelAndLocation(new_photo_id_array, cityInput, stateInput)
+        filterByLabelAndLocation(new_photo_id_array, city, state)
         .then((result) => { // businesses is an array of business object
           console.log("=====>Below are business information:")
           console.log(result)
-          var businesses = result[0]
           /* Do all the rendering here */
-            app.get('/search_business', (req, res) => {
-              res.send({ result });
-          });
+          return res.status(200).send({"query_result": result});
         })
       });
     });
@@ -153,9 +138,5 @@ app.post('/upload', function(req, res) {
 
     request.write(postData);
     request.end();
-
-    console.log(photo_id_array);
-
-    return res.status(200).send(req.file);
-  })
+  });
 });

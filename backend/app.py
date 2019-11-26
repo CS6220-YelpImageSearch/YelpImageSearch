@@ -14,9 +14,7 @@ class ImageQuery(Resource):
 
     def post(self):
         # data = request.form
-        data = request.get_json()
-        data = data['image']
-        print(data)
+        data = request.get_json()['image']
         # data = re.sub('^data:image/.+;base64,', '', data['image'])
         img_data = base64.b64decode(data)
         image = Image.open(BytesIO(img_data))

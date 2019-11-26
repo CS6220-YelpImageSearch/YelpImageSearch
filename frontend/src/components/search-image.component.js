@@ -14,32 +14,14 @@ export default class Results extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      photo_business: '',
-      businesses: '',
-      isLoad: false,
-    }
-    this.fetchImages = this.fetchImages.bind(this);
-  }
-
-async fetchImages() {
-    try {
-      const coffee = await getCoffee();
-      console.log(coffee);
-      const result = await axios.get('http://localhost:8000/search_business');
-      console.log(result.data);
-      this.setState({
-          businesses: result.data.result[0],
-          photo_business: result.data.result[1],
-          isLoad: true,
-        });
-    } catch(e) {
-      console.error(e);
+      photo_business: props.location.state["query_result"][1],
+      businesses: props.location.state["query_result"][0],
+      isLoad: true,
     }
   }
 
   componentDidMount() {
     document.title = 'YelpImageSearch';
-    this.fetchImages();
   }
 
   // Fetches our GET route from the Express server.
