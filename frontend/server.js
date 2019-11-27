@@ -31,13 +31,13 @@ var Photo_Plus_Business = require('./schema/photo_plus_business.model');
 // filter found photos using input label, city, and state
 var filterByLabelAndLocation = (photo_ids, inputLabel, inputCity, inputState) => {
   return new Promise((resolve, reject) => {
-    Photo_Plus_Business.find({photo_id: photo_ids}).exec()
+    Photo.find({photo_id: photo_ids}).exec()
     .then(function(photos) {
-      filtered_photo_business = []
-      filtered_business_id = []
+      var filtered_photo_business = []
+      var filtered_business_id = []
       for (i = 0; i < photos.length; i++) {
-        if ((photos[i].label == inputLabel) && (photos[i].city == inputCity) && (photos[i].state == inputState)) {
-          this_business = photos[i].business_id
+        if (photos[i].label == inputLabel) {
+          var this_business = photos[i].business_id
           filtered_photo_business.push({"photo_name": photos[i].photo_id+".jpg", "business_id": this_business})
           filtered_business_id.push(this_business)
         }
@@ -45,10 +45,15 @@ var filterByLabelAndLocation = (photo_ids, inputLabel, inputCity, inputState) =>
       return [filtered_photo_business, filtered_business_id]
     })
     .then(function(result) {
-      // resolve(result)
       Business.find({business_id: result[1]})
         .then(function(businesses) {
-          resolve([businesses, result[0]])
+          var filtered_business = []
+          for (i = 0; i < businesses.length; i++) {
+            if ((businesses[i].city == inputCity) && (businesses[i].state == inputState)) {
+              filtered_business.push(businesses[i])
+            }
+          } 
+          resolve([filtered_business, result[0]])
         })
     })
     .catch((err)=>{
