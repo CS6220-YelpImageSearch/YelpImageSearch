@@ -16,17 +16,22 @@ app.listen(PORT, function() {
 });
 
 // connect to mongodb
-mongoose.connect('mongodb://127.0.0.1:27017/yelp', { useNewUrlParser: true });
+const ATLAS_URI = "mongodb+srv://user:123@cluster0-gjnfz.mongodb.net/yelp?retryWrites=true&w=majority";
+// const LOCAL_URL = "mongodb://127.0.0.1:27017/yelp"
+mongoose.connect(ATLAS_URI, { useNewUrlParser: true, useCreateIndex: true });
 
 const connection = mongoose.connection;
 connection.once('open', function() {
 	console.log("MongoDB database connection established successfully");
+  // list all collections
+  // mongoose.connection.db.listCollections().toArray(function (err, names) {
+  //   console.log(names); 
+  // });
 });
 
 // load mongodb collections schema
 var Photo = require('./schema/photo.model');
 var Business = require('./schema/business.model');
-var Photo_Plus_Business = require('./schema/photo_plus_business.model');
 
 // filter found photos using input label, city, and state
 var filterByLabelAndLocation = (photo_ids, inputLabel, inputCity, inputState) => {
