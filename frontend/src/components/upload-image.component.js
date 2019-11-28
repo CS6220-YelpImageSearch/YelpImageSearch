@@ -160,7 +160,7 @@ export default class UploadImage extends Component {
             <div className="form-check form-check-inline">
               <input  className="form-check-input"
                       type="radio"
-                      name="labelInside"
+                      name="labelOptions"
                       id="labelInside"
                       value="Inside"
                       onChange={this.onChangeLabel}
