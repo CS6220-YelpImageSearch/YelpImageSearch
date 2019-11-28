@@ -1,15 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
-
-const imagePath = process.env.PUBLIC_URL;
-
-// set time out
-function getCoffee() {
-  return new Promise(resolve => {
-    setTimeout(() => resolve('☕'), 500);
-  });
-}
 
 export default class Results extends Component {
   constructor(props) {
@@ -33,7 +23,7 @@ export default class Results extends Component {
     } else {
       let result;
       var restaurantResultsNum = this.state.businesses.length;
-      if (restaurantResultsNum == 0) {
+      if (restaurantResultsNum === 0) {
         result = <h3>Sorry! No result for the chosen photo label, city and state!</h3>
       } else {
         result = this.state.businesses.map((business, index) => {
@@ -44,14 +34,14 @@ export default class Results extends Component {
                 <div className="card">
                   <div className="card-horizontal">
                     <div className="img-square-wrapper">
-                        <img src={"data:image/jpeg;base64," + `${photo.imageBase64}`} alt="input" height='300' weight='500'/>
+                        <img src={`data:image/jpeg;base64,${photo.imageBase64}`} alt="input" height='300' weight='500'/>
                     </div>
                     <div className="card-body">
                         <h4 className="card-title">Restaurant: {business.name}</h4>
                         <p className="card-text">Stars: {business.stars}</p>
                         <p className="card-text">Address: {business.address}</p>
                         <p className="card-text">Categories: {business.categories}</p>
-                        <a href={`https://www.yelp.com/search?find_desc=${business.name}&find_loc=NV`} target="_blank">Search in Yelp</a>
+                        <a href={`https://www.yelp.com/search?find_desc=${business.name}&find_loc=NV`} target="_blank" rel="noopener noreferrer">Search in Yelp</a>
                     </div>
                   </div>
                   <div className="card-footer">

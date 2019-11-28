@@ -18,7 +18,7 @@ class App extends Component {
       <Router>
         <div className="container">
           <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <a className="navbar-brand" href="https://codingthesmartway.com" target="_blank">
+            <a className="navbar-brand" href="https://www.yelp.com/">
               <img src={logo} width="30" height="30" alt="CodingTheSmartWay.com" />
             </a>
             <Link to="/upload" className="navbar-brand">Yelp Restaurant Search</Link>

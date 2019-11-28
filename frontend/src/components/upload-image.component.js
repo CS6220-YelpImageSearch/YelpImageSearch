@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Select from 'react-select';
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -28,7 +27,6 @@ export default class UploadImage extends Component {
   componentDidMount() {
     //Get html elements
     var stateSel = document.getElementById("stateSel");
-    var citySel = document.getElementById("citySel");
 
     //Load states
     for (var state in stateCityInfo) {
@@ -37,10 +35,10 @@ export default class UploadImage extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-	  console.log(
-	    `this.state.clickCounts(♻️ componentDidUpdate)`,
-	    this.state.state, this.state.city
-		)
+	 //  console.log(
+	 //    `this.state.clickCounts(♻️ componentDidUpdate)`,
+	 //    this.state.state, this.state.city
+		// )
 	}
 
   onChangeImage(e) {
@@ -87,11 +85,11 @@ export default class UploadImage extends Component {
   onSubmit(e) {
     e.preventDefault();
 
-    console.log(`Form submitted:`);
-    console.log(`Label: ${this.state.label}`);
-    console.log(`City: ${this.state.city}`);
-    console.log(`State: ${this.state.state}`);
-    console.log(`File: ${this.state.file}`);
+    // console.log(`Form submitted:`);
+    // console.log(`Label: ${this.state.label}`);
+    // console.log(`City: ${this.state.city}`);
+    // console.log(`State: ${this.state.state}`);
+    // console.log(`File: ${this.state.file}`);
 
     const data = new FormData();
     data.set('label', this.state.label);
@@ -101,7 +99,6 @@ export default class UploadImage extends Component {
     axios.post("http://localhost:8000/upload", data, {
     })
     .then(res => {
-      console.log(res.data);
       this.props.history.push({
 			  pathname: '/results',
 			  state: { query_result: res.data["query_result"], input_file:res.data["input_file"] }
@@ -119,12 +116,10 @@ export default class UploadImage extends Component {
   }
 
   render() {
-    const { selectedStateOption } = this.state.state;
-    const { selectedCityOption } = this.state.city;
     let {imagePreviewUrl} = this.state;
     let $imagePreview = null;
     if (imagePreviewUrl) {
-      $imagePreview = (<img src={imagePreviewUrl} />);
+      $imagePreview = (<img src={imagePreviewUrl} alt="user input" />);
     } else {
       $imagePreview = (<div className="previewText">Please select an Image for Preview</div>);
     }
