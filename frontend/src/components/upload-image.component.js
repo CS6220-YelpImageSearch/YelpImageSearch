@@ -101,7 +101,7 @@ export default class UploadImage extends Component {
     axios.post("http://localhost:8000/upload", data, {
     })
     .then(res => {
-      console.log(res.data["query_result"]);
+      console.log(res.data);
       this.props.history.push({
 			  pathname: '/results',
 			  state: { query_result: res.data["query_result"], input_file:res.data["input_file"] }

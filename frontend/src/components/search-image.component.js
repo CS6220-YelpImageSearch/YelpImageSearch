@@ -44,7 +44,7 @@ export default class Results extends Component {
                 <div className="card">
                   <div className="card-horizontal">
                     <div className="img-square-wrapper">
-                        <img src={`${imagePath}\/images\/` + `${photo.photo_name}`} alt="input" height='300' weight='500'/>
+                        <img src={"data:image/jpeg;base64," + `${photo.imageBase64}`} alt="input" height='300' weight='500'/>
                     </div>
                     <div className="card-body">
                         <h4 className="card-title">Restaurant: {business.name}</h4>

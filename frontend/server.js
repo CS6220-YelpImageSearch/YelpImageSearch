@@ -17,8 +17,8 @@ app.listen(PORT, function() {
 
 // connect to mongodb
 const ATLAS_URI = "mongodb+srv://user:123@cluster0-gjnfz.mongodb.net/yelp?retryWrites=true&w=majority";
-// const LOCAL_URL = "mongodb://127.0.0.1:27017/yelp"
-mongoose.connect(ATLAS_URI, { useNewUrlParser: true, useCreateIndex: true });
+const LOCAL_URL = "mongodb://127.0.0.1:27017/yelp"
+mongoose.connect(LOCAL_URL, { useNewUrlParser: true, useCreateIndex: true });
 
 const connection = mongoose.connection;
 connection.once('open', function() {
@@ -32,18 +32,19 @@ connection.once('open', function() {
 // load mongodb collections schema
 var Photo = require('./schema/photo.model');
 var Business = require('./schema/business.model');
+var Image = require('./schema/image.model');
 
 // filter found photos using input label, city, and state
 var filterByLabelAndLocation = (photo_ids, inputLabel, inputCity, inputState) => {
   return new Promise((resolve, reject) => {
-    Photo.find({photo_id: photo_ids}).exec()
+    Photo.find({photo_id: photo_ids})
     .then(function(photos) {
       var filtered_photo_business = []
       var filtered_business_id = []
       for (i = 0; i < photos.length; i++) {
         if (photos[i].label == inputLabel) {
           var this_business = photos[i].business_id
-          filtered_photo_business.push({"photo_name": photos[i].photo_id+".jpg", "business_id": this_business})
+          filtered_photo_business.push({"photo_name": photos[i].photo_id, "business_id": this_business})
           filtered_business_id.push(this_business)
         }
       }
@@ -56,9 +57,33 @@ var filterByLabelAndLocation = (photo_ids, inputLabel, inputCity, inputState) =>
           for (i = 0; i < businesses.length; i++) {
             if ((businesses[i].city == inputCity) && (businesses[i].state == inputState)) {
               filtered_business.push(businesses[i])
+            } 
+            else {
+              var photo_objs = result[0].filter((obj) => { return obj.business_id === businesses[i].business_id});
+              for (j = 0; j < photo_objs.length; j++) {
+                var index = result[0].indexOf(photo_objs[j]);
+                if (index > -1) {
+                  result[0].splice(index, 1);
+                }
+              }
             }
-          } 
-          resolve([filtered_business, result[0]])
+          }
+          // resolve([filtered_business, result[0]])
+          return [result[0], filtered_business]
+        })
+        .then(function(result) {
+          Image.find({photo_id: photo_ids})
+          .then(function(images) {
+            for (i = 0; i < images.length; i++) {
+              photo_objs = result[0].filter((obj) => { return obj.photo_name === images[i].photo_id});
+              photo_obj = photo_objs[0]
+              photo_obj["imageBase64"] = images[i]["imageBase64"];
+            }
+            resolve([result[1], result[0]])
+          })
+          .catch((err)=>{
+            reject(err);
+          });
         })
     })
     .catch((err)=>{
