@@ -15,7 +15,7 @@ import os.path as osp
 
 def load_sift():
     name_dataset = 'yelp'
-    vocab_filename = '4000vocab.h5'
+    vocab_filename = './../output/4000vocab.h5'
 
     if osp.exists(vocab_filename):
         with h5py.File(vocab_filename, 'r') as hf:
@@ -23,14 +23,14 @@ def load_sift():
     else:
         raise "vocab file does not exist"
 
-    feats_filename = 'feats.h5'
+    feats_filename = './../output/feats.h5'
     if osp.exists(feats_filename):
         with h5py.File(feats_filename, 'r') as hf:
             train_feats = hf[name_dataset][:]
     else:
         raise "feats file does not exist"
         
-    paths_filename = 'paths.h5'
+    paths_filename = './../output/paths.h5'
     if osp.exists(paths_filename):
         with h5py.File(paths_filename, 'r') as hf:
             paths = hf[name_dataset][:]
@@ -53,7 +53,7 @@ def sift_query(img_path, display=False):
     if display:
         for i, img in enumerate(predicted_paths):
             img = img.decode("utf-8").split('/')[-1]
-            image = mpimg.imread('./data/LV_photos' + '/' + img)
+            image = mpimg.imread('./../data/LV_photos' + '/' + img)
             plt.title('search output %d' %(i+1))
             plt.imshow(image)
             plt.show()
@@ -62,12 +62,12 @@ def sift_query(img_path, display=False):
 
 
 def cnn_query(img_path, display=False):
-    h5f = h5py.File('./output/feature/LasVegasFoodFeatures', 'r')
+    h5f = h5py.File('./../output/LasVegasFoodFeatures', 'r')
     features = h5f['dataset_1'][:]
     img_names = h5f['dataset_2'][:]
     h5f.close()
 
-    best_model = load_model('./output/model/best_model.hdf5', compile = False)
+    best_model = load_model('./../output/best_model.hdf5', compile = False)
     feature_extractor = K.function([best_model.layers[0].input], [best_model.layers[-4].output])
     img = kimage.load_img(img_path, target_size=(299, 299))
     img = kimage.img_to_array(img)                    
@@ -83,7 +83,7 @@ def cnn_query(img_path, display=False):
 
     if display:
         for i, img in enumerate(img_list):
-            image = mpimg.imread('./data/LV_photos' + '/' + str(img, 'utf-8'))
+            image = mpimg.imread('./../data/LV_photos' + '/' + str(img, 'utf-8'))
             plt.title('search output %d' %(i+1))
             plt.imshow(image)
             plt.show()
@@ -106,7 +106,7 @@ def rank_rerank(img_path, k, display=False):
 
     if display:
         for i, img in enumerate(img_list):
-            image = mpimg.imread('./data/LV_photos' + '/' + str(img, 'utf-8'))
+            image = mpimg.imread('./../data/LV_photos' + '/' + str(img, 'utf-8'))
             plt.title('search output %d' %(i+1))
             plt.imshow(image)
             plt.show()
@@ -132,7 +132,7 @@ def average_score(img_path, w, display=False):
     dict_distance.sort(key = lambda x: x[1])
     if display:
         for name, _ in dict_distance[:3]:
-            image = mpimg.imread('./data/LV_photos' + '/' + img)
+            image = mpimg.imread('./../data/LV_photos' + '/' + img)
             plt.title('search output %d' %(i+1))
             plt.imshow(image)
             plt.show()

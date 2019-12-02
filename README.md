@@ -78,9 +78,23 @@ To switch to use local database, edit ```frontend/server.js``` line 21, change `
 
 #### Image Retrieval Models 
 
-- For the SIFT image retrieval model part, you can open the ipynb files ```model/sift_retrieval.ipynb``` in Google Colab. 
+- For the SIFT image retrieval model part, you can open the ipynb files ```model/sift_retrieval.ipynb``` in Google Colab. After running it, you can get three files **4000vocab.h5**, **feats.h5** and **paths.h5**. Then put them into **"output/"**
 
-- For the CNN image retrieval model part, you can open the ipynb files ```model/image_search_cnn.ipynb``` in Google Colab.
+- For the CNN image retrieval model part, you can open the ipynb files ```model/image_search_cnn.ipynb``` in Google Colab. After running it, you can get two files **LasVegasFoodFeatures** and **best_model.hdf5**. Then put them into **"output/"**.
+
+Since it takes a lot of time to run these two files, we provide the files in our [Google Drive](https://drive.google.com/drive/folders/12TH7Yz1bxPhcun7ebZ7vWRFNW_r9iggG?usp=sharing).
+
+#### Evaluation
+
+In the **"evaluation/"** directory, use conda to create the environment based on **"environment_mac.yml"**. 
+
+To evaluate the performance of one method, you can run the command:
+
+```
+python3 evaluate.py [method] [img_path]
+```
+
+For the method, we support **sift**, **cnn**, **rerank** and **average**.
 
 #### Web Application
 
@@ -110,5 +124,5 @@ The demo of our application is shown in the following video:
 ### Development: 
 - Bin Xie - bin.xie@gatech.edu
 - Anjian Peng - penganjian@gatech.edu
-- Mingyi Hu - 
-- Xibei Zhang - 
+- Minyi Hu - mhu80@gatech.edu
+- Xibei Zhang - xb_zhang@gatech.edu
