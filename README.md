@@ -1,20 +1,19 @@
 # YelpImageSearch
-This is the final project for the course CS6220 Big Data System and Analytics.
+> This is the final project for CS6220 Big Data System and Analytics in Gatech. We aim to help people search the restaurants based on the photos.
 
 ## Introduction
-The image data comes from Yelp challenge
 
-We developed a Yelp Restaurant Iamge Search application. Users can upload a food image and find the restaurants with the searched food in Yelp. 
+In our daily life, sometimes we see some good foods in Facebook or Instagram but we don't know their names. Also, Yelp and Google Map don't support restaturants search based on food images. 
 
-The application is developed by React and Flask.
+Therefore, we developed this Yelp Restaurant Iamge Search application. Users can upload a food image and find the restaurants with the searched food in Yelp. To implement it, we explore the traditional image retrieval methods like SIFT, deep learning methods like CNN model and the combinations of these two methods.
 
-The image retrieval model is based on SIFT and CNN model. We tested on SIFT, CNN model and combination of SIFT and CNN model. 
+## Architecture
+- The data preprocess and analysis are developed by MongoDB and Python.
+- The front end is developed by React.
+- The backend is developed by Flask.
+- The SIFT and CNN model are developed by Python and TensorFlow on Google Colab.
 
-## Installation
-
-For the image retrieval model part, you can open the ipynb files ```model/sift_retrieval.ipynb``` for SIFT model and ```model/image_search_cnn.ipynb``` in Google Colab. 
-
-For our application, to start the frontend, under the ```frontend/``` directory, run the command ```npm install``` to install the dependencies and run ```nodemon server``` and ```nodemon```. To start the backend, under the ```backend/``` directory, run the command ```pip install requirements.txt``` to install the dependencies and run ```python app.py``` to start the server.
+![](screenshots/architecture.png)
 
 ## Data Preperation
 
@@ -26,16 +25,90 @@ To switch to use remote database, edit ```frontend/server.js``` line 21, change 
 
 ### Local Database
 
-1. Download dataset from https://www.yelp.com/dataset. Extract the downloaded files and put folders ```yelp_dataset``` and ```yelp_photos``` under the root folder.
-2. Install [MongoDB](https://docs.mongodb.com/manual/installation/)
-3. Create a database named ```yelp``` in MongoDB.
-4. Use ```mongoimport``` command to import ```yelp_dataset/business.json``` as the ```business``` collection in ```yelp``` database.    
-```mongoimport --db yelp --collection business --type JSON --file {path_to_business.json}```
-5. Use ```mongoimport``` command to import ```yelp_dataset/photo.json``` as the ```photo``` collection in ```yelp``` database.   
-```mongoimport --db yelp --collection photo --type JSON --file {path_to_photo.json}```
-6. Under ```scripts/``` folder, run ```python3 createPhotoImageJson.py``` to create a json file named ```LVImageBase64.json``` under ```yelp_dataset/```. This file contains the photo_id of photos for businesses in Las Vegas and the corresponding photos in ```yelp_photos/``` encoded as base 64.
-7. Use ```mongoimport``` command to import ```yelp_dataset/LVImageBase64.json``` as the ```image``` collection in ```yelp``` database.   
-```mongoimport --db yelp --collection image --type JSON --jsonArray --file {path_to_LVImageBase64.json}```
+- Download dataset from [Yelp Open Dataset](https://www.yelp.com/dataset). Extract the downloaded files and put folders **"yelp_dataset"** and **"yelp_photos"** under the **"data/"** folder.
+
+- Install [MongoDB](https://docs.mongodb.com/manual/installation/)
+
+- Create a database named **yelp** in MongoDB.
+
+- Import **"yelp_dataset/business.json"** as the **business** collection in **yelp** database.
+
+```
+mongoimport --db yelp --collection business --type JSON --file data/yelp_dataset/business.json
+```
+
+- Import **"yelp_dataset/photo.json"** as the **photo** collection in **yelp** database. 
+
+```
+mongoimport --db yelp --collection photo --type JSON --file data/yelp_dataset/photo.json
+```
+
+- To create the file **LVImageBase64.json** containing the photo_id of photos for businesses in Las Vegas city and the corresponding photos encoded as base 64, under **"scripts/"** directory, run the command
+
+```
+python3 createPhotoImageJson.py
+```
+
+- To create the folder **LV_photos** containing all the food imagesin Las Vegas city, under **"scripts/"** directory, run the command
+
+```
+./lv_food.sh
+```
+
+- Import **"data/yelp_dataset/LVImageBase64.json"** as the ```image``` collection in ```yelp``` database.  
+ 
+```
+mongoimport --db yelp --collection image --type JSON --jsonArray --file data/yelp_dataset/LVImageBase64.json
+```
 
 To switch to use local database, edit ```frontend/server.js``` line 21, change ```ATLAS_URI``` to ```LOCAL_URL``` to connect to the local database.
 
+
+
+## Installation and Development
+
+
+### Prerequisite:
+
+- npm
+- python3
+- colab
+
+### Installation
+
+#### Image Retrieval Models 
+
+- For the SIFT image retrieval model part, you can open the ipynb files ```model/sift_retrieval.ipynb``` in Google Colab. 
+
+- For the CNN image retrieval model part, you can open the ipynb files ```model/image_search_cnn.ipynb``` in Google Colab.
+
+#### Web Application
+
+- To install the dependencies and run the frontend, under the **"frontend/"** directory, run the command 
+
+```
+npm install
+nodemon server
+nodemon
+```
+
+- To install the dependencies and run the backend, under the **"backend/"** directory, run the command 
+
+```
+pip3 install requirements.txt
+python3 app.py
+```
+
+
+## Usage example
+
+The demo of our application is shown in the following video:
+
+[![cover](screenshots/example.png)](https://www.youtube.com/watch?v=P-gYRTt4tmk)
+
+## Meta
+### Development: 
+- Bin Xie - bin.xie@gatech.edu
+- Anjian Peng - penganjian@gatech.edu
+- Mingyi Hu - 
+- Xibei Zhang - 

@@ -7,12 +7,12 @@ import h5py
 
 class CNNModel:
     def __init__(self):
-        h5f = h5py.File('LasVegasFoodFeatures','r')
+        h5f = h5py.File('./../output/LasVegasFoodFeatures','r')
         self.features = h5f['dataset_1'][:]
         self.img_names = h5f['dataset_2'][:]
         h5f.close()
 
-        self.best_model = load_model('best_model.hdf5', compile = False)
+        self.best_model = load_model('./../output/best_model.hdf5', compile = False)
         # construct the feature extractor based on our best model
         self.feature_extractor = K.function([self.best_model.layers[0].input], [self.best_model.layers[-4].output])
 
